@@ -30,6 +30,7 @@ export class CarsService {
     }
 
     getById(id: string) {
+
         const card = this.cards.find(car => car.id === id);
         if (!card) throw new NotFoundException("No se encontró un carro con el id " + id);
 
