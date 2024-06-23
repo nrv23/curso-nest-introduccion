@@ -1,7 +1,8 @@
+import { BadRequestException } from '@nestjs/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCarDTO } from 'src/cars/dto/create-car.dto';
+import { CreateCarDTO, UpdateCarDto } from 'src/cars/dto';
 import { ICar } from 'src/cars/interfaces/Car.interface';
-import { v4 as  uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class CarsService {
@@ -29,16 +30,14 @@ export class CarsService {
     }
 
     getById(id: string) {
-        console.log({id})
-        const card = this.cards.find(car => car.id === id );
-        console.log({card});
-        if(!card) throw new NotFoundException("No se encontró un carro con el id " +id);
+        const card = this.cards.find(car => car.id === id);
+        if (!card) throw new NotFoundException("No se encontró un carro con el id " + id);
 
         return card;
     }
 
     create(card: CreateCarDTO) {
-        const car :ICar = {
+        const car: ICar = {
             id: uuid(),
             ...card
         };
@@ -46,5 +45,39 @@ export class CarsService {
 
         return car;
     }
- 
+
+    update(id: string, car: UpdateCarDto) {
+
+        let findCar = this.getById(id);
+
+        if (car.id && id !== car.id)
+            throw new BadRequestException(`Car id ${car.id} is not valid`);
+
+        this.cards = this.cards.map(el => {
+            if (el.id === id) {
+                findCar = {
+                    ...findCar,
+                    ...car,
+                    id
+                }
+
+                return findCar;
+            }
+
+            return {
+                ...car,
+                id
+            };
+        });
+
+        return findCar;
+    }
+
+    delete(id: string) {
+
+        const exists = this.getById(id);
+        if (!exists) throw new NotFoundException(`Car Id ${id} is not exist`);
+        this.cards = this.cards.filter(car => car.id !== id);
+        return exists;
+    }
 }

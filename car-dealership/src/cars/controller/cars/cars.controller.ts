@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
-import { CreateCarDTO } from 'src/cars/dto/create-car.dto';
 import { CarsService } from 'src/cars/service/cars/cars.service';
+import { UpdateCarDto, CreateCarDTO } from '../../dto';
 
 @Controller('cars')
 // @UsePipes(ValidationPipe) // usar el validation pipe a nivel de controlador
@@ -21,21 +21,19 @@ export class CarsController {
   @Post()
 
   createCard(@Body() dto: CreateCarDTO) { // leer el body
-    
+
     return this.cardService.create(dto);
   }
 
   @Put(':id')
-  updateCard(@Param('id', ParseUUIDPipe) id: number, @Body() body) {
-  //updateCard(@Param('id', new ParseUUIDPipe({version: '4'})) id: number, @Body() body) {
-    return body;
+  updateCard(@Param('id', ParseUUIDPipe) id: string, @Body() body: UpdateCarDto) {
+    //updateCard(@Param('id', new ParseUUIDPipe({version: '4'})) id: number, @Body() body) {
+    return this.cardService.update(id, body);
   }
 
   @Delete(':id')
-  deleteCar(@Param('id', ParseUUIDPipe) id: number) {
-    return {
-      message: "Eliminado",
-      id
-    }
+  deleteCar(@Param('id', ParseUUIDPipe) id: string) {
+
+    return this.cardService.delete(id);
   }
 }
