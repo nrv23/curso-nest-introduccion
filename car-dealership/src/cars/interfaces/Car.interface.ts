@@ -1,5 +1,10 @@
-export interface ICar {
-    id: string;
+
+
+
+export interface Car {
+
+    id:    string;
     brand: string;
-    model: string
+    model: string;
+
 }

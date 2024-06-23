@@ -1,9 +1,10 @@
-/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { CarsController } from './controller/cars/cars.controller';
-import { CarsService } from './service/cars/cars.service';
+import { CarsController } from './cars.controller';
+import { CarsService } from './cars.service';
+
 @Module({
-  controllers: [CarsController],
-  providers: [CarsService]
+  controllers: [ CarsController ],
+  providers: [ CarsService ],
+  exports: [ CarsService ]
 })
 export class CarsModule {}

@@ -1,18 +1,11 @@
+// import { PartialType } from '@nestjs/mapped-types';
+// import { CreateBrandDto } from './create-brand.dto';
+import { IsString, MinLength } from 'class-validator';
 
-/*import { PartialType } from '@nestjs/mapped-types';
-import { CreateBrandDto } from './create-brand.dto';
-
-export class UpdateBrandDto extends PartialType(CreateBrandDto) {}*/
-
-import { IsString, IsUUID, MinLength } from "class-validator";
-
+// export class UpdateBrandDto extends PartialType(CreateBrandDto) {}
 export class UpdateBrandDto {
-
+    
     @IsString()
-    @IsUUID()
-    id: string
-
-    @IsString()
-    @MinLength(5)
+    @MinLength(1)
     name: string;
 }

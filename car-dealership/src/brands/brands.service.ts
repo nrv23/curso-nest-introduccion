@@ -1,68 +1,70 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
+
+import { Brand } from './entities/brand.entity';
+
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { Brand } from './entities/brand.entity';
-import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class BrandsService {
 
-  private brands: Array<Brand> = [];
+  private brands: Brand[] = [
+    // {
+    //   id: uuid(),
+    //   name: 'Toyota',
+    //   createdAt: new Date().getTime()
+    // }
+  ]
 
   create(createBrandDto: CreateBrandDto) {
+    
+    const { name } = createBrandDto;
 
-    const newBrand: Brand = {
+    const brand: Brand = {
       id: uuid(),
-      name: createBrandDto.name,
-      createdAt: new Date().getTime()
+      name: name.toLocaleLowerCase(),
+      createdAt: new Date().getTime(),
     }
-    this.brands.push(newBrand);
-    return newBrand;
 
+    this.brands.push( brand );
+    
+    return brand;
   }
 
   findAll() {
     return this.brands;
   }
 
-  findOne(id: string) {
+  findOne(id: string ) {
+    const brand = this.brands.find( brand => brand.id === id );
+    if ( !brand ) 
+      throw new NotFoundException(`Brand with id "${ id }" not found`);
 
-    const brand = this.brands.find(brand => brand.id === id);
-    if (!brand) throw new NotFoundException(`Brand with id ${id} not found`);
     return brand;
   }
 
   update(id: string, updateBrandDto: UpdateBrandDto) {
-    let findBrand = this.findOne(id);
+    
+    let brandDB = this.findOne( id );
 
-    if (updateBrandDto.id && id !== updateBrandDto.id)
-      throw new BadRequestException(`Brand id ${findBrand.id} is not valid`);
-
-    this.brands = this.brands.map(brand => {
-      if (brand.id === id) {
-        findBrand = {
-          ...findBrand,
-          ...updateBrandDto,
-          updatedAt: new Date().getTime(),
-          id
-        }
-
-        return findBrand;
+    this.brands = this.brands.map( brand => {
+      if( brand.id === id ) {
+        brandDB.updatedAt = new Date().getTime();
+        brandDB = { ...brandDB, ...updateBrandDto  }
+        return brandDB;
       }
-
-      return {
-        ...brand,
-        id
-      };
+      return brand;
     });
 
-    return findBrand;
+    return brandDB;
   }
 
-  remove(id: string) {
-    const brand = this.findOne(id);
-    if (!brand) throw new NotFoundException(`Brand Id ${id} is not exist`);
-    this.brands = this.brands.filter(el => el.id !== id);
-    return brand;
+  remove(id: string ) {
+    this.brands = this.brands.filter( brand => brand.id !== id );
+  }
+
+  fillCarsWithSeedData( brands: Brand[] ) {
+    this.brands = brands;
   }
 }
