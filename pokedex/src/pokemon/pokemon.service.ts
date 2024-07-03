@@ -38,7 +38,7 @@ export class PokemonService {
   async findOne(query: string) {
 
     let pokemon: Pokemon = null;
-   
+
     if (!isNaN(+query)) { // es un numero
       pokemon = await this.pokemonModel.findOne({ no: query });
     }
@@ -70,17 +70,18 @@ export class PokemonService {
     }
   }
 
-  
+
   async remove(id: string) {
-    const pokemon = await this.findOne(id);
-    await pokemon.deleteOne();
+    const { deletedCount } = await this.pokemonModel.deleteOne({ _id: id });
+    if (deletedCount === 0) throw new NotFoundException(`there is not pokemon with id ${id}`);
+    return;
   }
 
-  handleExceptions(error:any) {
+  handleExceptions(error: any) {
     if (error.code === 11000) {
       throw new BadRequestException(`Pokemon already exist`);
     }
-    
+
     throw new InternalServerErrorException("Internal Server Error");
   }
 }
